@@ -1,0 +1,11 @@
+{
+  "configurations": [
+    {
+      "type": "java",
+      "name": "Launch GrayLevelProcessing",
+      "request": "launch",
+      "mainClass": "imageprocessing.GrayLevelProcessing",
+      "args": "./images/cat2.jpg ./images/cat_output.jpg"
+    }
+  ]
+}      
