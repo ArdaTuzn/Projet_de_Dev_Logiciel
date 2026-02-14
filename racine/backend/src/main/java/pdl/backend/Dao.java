@@ -9,7 +9,7 @@ public interface Dao<T> {
 
   Optional<T> retrieve(final long id);
 
-  List<T> retrieveAll();//a
+  List<T> retrieveAll();
 
   void update(final T t, final String[] params);
 
