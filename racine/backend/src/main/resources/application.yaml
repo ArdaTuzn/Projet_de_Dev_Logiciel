@@ -3,7 +3,3 @@ spring:
     name: MyFirstApplication
   config:
     import: optional:file:.env[.properties]
-  datasource:        
-    url: "jdbc:postgresql://${HOST_NAME}:5432/${DATABASE_NAME}"
-    username: ${DATABASE_NAME}
-    password: ${DATABASE_PASSWORD}
