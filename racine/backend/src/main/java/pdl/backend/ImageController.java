@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import java.io.IOException;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -33,19 +34,33 @@ public class ImageController {
 
   @RequestMapping(value = "/images/{id}", method = RequestMethod.GET, produces = MediaType.IMAGE_JPEG_VALUE)
   public ResponseEntity<?> getImage(@PathVariable long id) {
-    Image img = imageDao.retrieve(id).get();
-    return ResponseEntity
+    Optional<Image> imgOptional = imageDao.retrieve(id);
+    if (imgOptional.isPresent()) {
+      Image img = imgOptional.get();
+      return ResponseEntity
             .ok()
             .body(img.getData());
+    } else {
+      return ResponseEntity
+             .notFound()
+             .build();
+    }
   }
 
   @RequestMapping(value = "/images/{id}", method = RequestMethod.DELETE)
   public ResponseEntity<?> deleteImage(@PathVariable long id) {
-    Image img = imageDao.retrieve(id).get();
-    imageDao.delete(img);
-    return ResponseEntity
-            .noContent()
-            .build();
+    Optional <Image> imgOptional = imageDao.retrieve(id);
+    if (imgOptional.isPresent()) {
+      Image img = imgOptional.get();
+      imageDao.delete(img);
+      return ResponseEntity
+              .noContent()
+              .build();
+    } else {
+      return ResponseEntity
+              .notFound()
+              .build();
+    }
   }
 
   @RequestMapping(value = "/images", method = RequestMethod.POST)
