@@ -2,6 +2,9 @@ package pdl.backend;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+
+import java.io.IOException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -30,27 +33,44 @@ public class ImageController {
 
   @RequestMapping(value = "/images/{id}", method = RequestMethod.GET, produces = MediaType.IMAGE_JPEG_VALUE)
   public ResponseEntity<?> getImage(@PathVariable long id) {
-    // TODO
-    return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    Image img = imageDao.retrieve(id).get();
+    return ResponseEntity
+            .ok()
+            .body(img.getData());
   }
 
   @RequestMapping(value = "/images/{id}", method = RequestMethod.DELETE)
   public ResponseEntity<?> deleteImage(@PathVariable long id) {
-    // TODO
-    return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    Image img = imageDao.retrieve(id).get();
+    imageDao.delete(img);
+    return ResponseEntity
+            .noContent()
+            .build();
   }
 
   @RequestMapping(value = "/images", method = RequestMethod.POST)
   public ResponseEntity<?> addImage(@RequestParam MultipartFile file) {
-    // TODO
-    return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    try {
+      byte[] bytes = file.getBytes();
+      Image img = new Image(file.getOriginalFilename(), bytes);
+      imageDao.create(img);    
+      return ResponseEntity
+              .status(HttpStatus.CREATED)
+              .body(img);      
+    } catch (IOException e) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                             .body("File processing error");
   }
 
   @RequestMapping(value = "/images", method = RequestMethod.GET, produces = "application/json; charset=UTF-8")
-  @ResponseBody
   public ArrayNode getImageList() {
     ArrayNode nodes = mapper.createArrayNode();
-    // TODO
+    for (Image img : imageDao.retrieveAll()) {
+        ObjectNode node = mapper.createObjectNode();
+        node.put("id", img.getId());
+        node.put("name", img.getName());
+        nodes.add(node);
+    }
     return nodes;
   }
 

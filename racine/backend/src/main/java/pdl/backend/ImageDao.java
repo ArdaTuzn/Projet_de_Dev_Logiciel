@@ -53,6 +53,6 @@ public class ImageDao implements Dao<Image> {
 
   @Override
   public void delete(final Image img) {
-    images.remove(img.getId())
+    images.remove(img.getId());
   }
 }
