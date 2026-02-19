@@ -12,6 +12,12 @@ public class Image {
     this.data = data;
   }
 
+  public Image(Long id, String name, byte[] data) {
+    this.id = id;
+    this.name = name;
+    this.data = data;
+  }
+
   public long getId() {
     return id;
   }
@@ -27,4 +33,9 @@ public class Image {
   public byte[] getData() {
     return data;
   }
+
+  public static void setCount(Long newCount) {
+    count = newCount;
+  }
+
 }

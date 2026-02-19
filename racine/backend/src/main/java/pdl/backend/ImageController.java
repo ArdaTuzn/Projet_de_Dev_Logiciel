@@ -75,6 +75,7 @@ public class ImageController {
     } catch (IOException e) {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                              .body("File processing error");
+    }
   }
 
   @RequestMapping(value = "/images", method = RequestMethod.GET, produces = "application/json; charset=UTF-8")
