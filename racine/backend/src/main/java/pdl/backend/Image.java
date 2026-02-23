@@ -38,4 +38,7 @@ public class Image {
     count = newCount;
   }
 
+  public void setId(Long realId) {
+    this.id = realId;  }
+
 }

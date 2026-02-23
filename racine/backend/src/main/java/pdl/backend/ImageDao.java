@@ -2,7 +2,6 @@ package pdl.backend;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -11,8 +10,6 @@ import java.util.Optional;
 
 import org.springframework.http.MediaType;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.MediaTypeFactory;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -42,10 +39,11 @@ public class ImageDao implements Dao<Image>, InitializingBean {
 
   @Override
   public void create(final Image img) {
-    images.put(img.getId(), img);
     String type = MediaTypeFactory.getMediaType(img.getName()).orElse(MediaType.APPLICATION_OCTET_STREAM).toString();
-    String sql = "INSERT INTO images (name, type) VALUES (?,?)";
-    jdbc.update(sql, img.getName(), type);
+    String sql = "INSERT INTO images (name, type) VALUES (?, ?) RETURNING id";
+    Long realId = jdbc.queryForObject(sql, Long.class, img.getName(), type);
+    img.setId(realId); 
+    images.put(img.getId(), img);
     try {
       FileOutputStream fos = new FileOutputStream("/Users/ardatuzun/Documents/Projet_de_Developpement_Logiciel/Projet_de_Dev_Logiciel/racine/backend/src/main/resources/" + img.getName());
       fos.write(img.getData());
@@ -91,11 +89,10 @@ public class ImageDao implements Dao<Image>, InitializingBean {
       images.put(imageId, newImage);
       return newImage;
     };
+    jdbc.query(sql, imageRowMapper);
     if (!images.isEmpty()) {
         long maxIdInDb = images.keySet().stream().max(Long::compare).get();
         Image.setCount(maxIdInDb + 1); 
     }
-    jdbc.query(sql, imageRowMapper);
-    
   }
 }
