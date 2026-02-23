@@ -1,5 +1,6 @@
 package imageprocessing;
 
+import boofcv.alg.misc.ImageStatistics;
 import boofcv.io.image.UtilImageIO;
 import boofcv.struct.image.GrayU8;
 
@@ -36,8 +37,20 @@ public class GrayLevelProcessing {
 		}
 	}
 
-    public static void main( String[] args ) {
 
+	public static void contrast_optimization2(GrayU8 input) {
+		int min = ImageStatistics.min(input);
+		int max = ImageStatistics.max(input);
+		for (int y = 0; y < input.height; ++y) {
+			for (int x = 0; x < input.width; ++x) {
+				int g1 = input.get(x,y);
+				g1 = 255/(max-min) * (g1-min);
+				input.set(x,y,g1);
+			}
+		}
+	}
+	
+    public static void main(String[] args) {
     	// load image
 		if (args.length < 2) {
 			System.out.println("missing input or output image filename");
@@ -49,13 +62,17 @@ public class GrayLevelProcessing {
 			System.err.println("Cannot read input file '" + inputPath);
 			System.exit(-1);
 		}
-
+		
 		// processing
 		
         //threshold(input, 128);
 		
+		// luminosity
 		change_luminosity(input, 70);
 		
+		//contrast
+		contrast_optimization2(input);
+
 		// save output image
 		final String outputPath = args[1];
 		UtilImageIO.saveImage(input, outputPath);
